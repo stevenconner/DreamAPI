@@ -152,6 +152,8 @@ app.use(async function verifyJwt(ctx, next) {
   await next();
 });
 
+app.use(require('./routes.journal.js'));
+
 // Import other routes that depend on the JWT
 
 // Create the server

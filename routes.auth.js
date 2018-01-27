@@ -42,7 +42,7 @@ router.post('/auth/', async function getAuth(ctx) {
   }
 
   ctx.state.user = user;
-  console.log(ctx.state.user);
+  console.log('asdlifuyghakhjsdfagsdjhfkg asdjkfhg asd', ctx.state.user.id);
 
   try {
     const payload = {
