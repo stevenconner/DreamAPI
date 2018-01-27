@@ -46,10 +46,7 @@ class Journal {
 
     try {
       await global.db.query('INSERT INTO journal (userID, dateAdded, content, type) values (?, ?, ?, ?)', [ctx.state.user.id, new Date(), body.content, body.type]);
-      ctx.body = {
-        error: false,
-        msg: 'Successfully added journal entry'
-      };
+      await Journal.get(ctx);
     } catch (e) {
       ctx.body = {
         error: true,
