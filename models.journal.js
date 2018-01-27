@@ -1,6 +1,7 @@
 'use strict';
 
 const sentiment = require('sentiment');
+const axios = require('axios');
 
 class Journal {
   /**
@@ -75,17 +76,48 @@ class Journal {
    * @param  {object} ctx
    */
   static async createJournal(ctx) {
-    const body = JSON.parse(ctx.request.body);
+    console.log('body', ctx.request.body);
+    const body = ctx.request.body;
+    // const body = JSON.parse(ctx.request.body);
 
-    try {
-      await global.db.query('INSERT INTO journal (userID, dateAdded, content, type) values (?, ?, ?, ?)', [ctx.state.user.id, new Date(), body.content, body.type]);
-      await Journal.get(ctx);
-    } catch (e) {
-      ctx.body = {
-        error: true,
-        msg: `Caught error: ${e}`
-      };
+    // Calculate sentiment
+    const sent = sentiment(body.content);
+
+    // Push the top three most significant words to the score for reference
+    const words = [];
+    let counter = 0;
+    for (let i = 0; i < sent.words.length; i++) {
+      if (counter < 2) {
+        words.push(sent.words[i]);
+        counter++;
+      }
     }
+
+    // Construct the object to push
+    const obj = {
+      score: sent.score,
+      words: words
+    };
+
+    console.log('here is the sentiment stuff', obj);
+
+    let searchTerm = words[0] + ' ' + words[1] + ' art';
+    axios.get(`https://api.cognitive.microsoft.com/bing/v7.0/images/search?q=${searchTerm}&count=1&safeSearch&license=ModifyCommercially`, { headers: { "Ocp-Apim-Subscription-Key": '54cbe24df84d498fa82e36e11fd8a3c3' } })
+      .then(resp => {
+      console.log('resp', resp.data.value);
+    }).catch(e => {
+      console.log('ERROR ROEWJRIWOERFJOIWJEFIO', e);
+    })
+
+    // try {
+    //   await global.db.query('INSERT INTO journal (userID, dateAdded, content, type) values (?, ?, ?, ?)', [ctx.state.user.id, new Date(), body.content, body.type]);
+    //   await Journal.get(ctx);
+    // } catch (e) {
+    //   ctx.body = {
+    //     error: true,
+    //     msg: `Caught error: ${e}`
+    //   };
+    // }
   }
 
   /**

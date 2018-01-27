@@ -40,6 +40,7 @@ router.post('/auth', async function getAuth(ctx) {
       ctx.throw(401, 'Username/password not found!');
     }
   }
+  delete user.password;
 
   ctx.state.user = user;
 
