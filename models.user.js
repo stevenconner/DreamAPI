@@ -24,11 +24,11 @@ class User {
 
     console.log(body);
 
-    await global.db.execute(`INSERT INTO user (firstName, email, password) values (:firstName, :email, :password)`, {
-      firstName: body.firstName,
-      email: body.email,
-      password: hashedPassword
-    });
+    try {
+      await global.db.execute(`INSERT INTO user (firstName, email, password) values (?, ?, ?)`, [body.firstName, body.email, hashedPassword]);
+    } catch (e) {
+      console.log(`Error inserting ${body} with ${hashedPassword}`);
+    }
 
     // Set the response object
     ctx.body = {
