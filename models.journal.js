@@ -1,5 +1,7 @@
 'use strict';
 
+const sentiment = require('sentiment');
+
 class Journal {
   /**
    * Fetches all journal entries given a userID
@@ -7,8 +9,9 @@ class Journal {
    */
   static async get(ctx) {
     try {
-      let [journals] = await global.db.query('SELECT * FROM journal WHERE userID = ?', [ctx.state.user.id]);
+      let [journals] = await global.db.query('SELECT * FROM journal WHERE userID = ? ORDER BY dateAdded desc', [ctx.state.user.id]);
 
+      const allJournals = journals;
       const dayJournals = [];
       const dreamJournals = [];
 
@@ -18,6 +21,7 @@ class Journal {
       }
 
       journals = {
+        all: allJournals,
         day: dayJournals,
         dream: dreamJournals
       };
@@ -42,11 +46,32 @@ class Journal {
   static async createJournal(ctx) {
     const body = JSON.parse(ctx.request.body);
 
-    console.log(ctx.state.user);
-
     try {
       await global.db.query('INSERT INTO journal (userID, dateAdded, content, type) values (?, ?, ?, ?)', [ctx.state.user.id, new Date(), body.content, body.type]);
       await Journal.get(ctx);
+    } catch (e) {
+      ctx.body = {
+        error: true,
+        msg: `Caught error: ${e}`
+      };
+    }
+  }
+
+  /**
+   * Analyzes a journal entry and calculates sentiment
+   * @param  {object} ctx
+   */
+  static async calcualateSentiment(ctx) {
+    try {
+      const [[entry]] = await global.db.query('SELECT content FROM journal WHERE id = ?', [ctx.params.journalID]);
+
+      const result = sentiment(entry.content);
+
+      ctx.body = {
+        sentiment: result,
+        error: false,
+        msg: 'Analyzed sentiment'
+      };
     } catch (e) {
       ctx.body = {
         error: true,

@@ -6,8 +6,7 @@ const randomstring = require('randomstring');
 
 class User {
   static async createUser(ctx) {
-    // const body = JSON.parse(ctx.request.body);
-    const body = ctx.request.body;
+    const body = JSON.parse(ctx.request.body);
 
     let hashedPassword = '';
     try {
@@ -42,6 +41,7 @@ class User {
 
       // Set the response object
       ctx.body = {
+        user: user,
         jwt: token,
         refreshToken: refreshToken,
         error: false,

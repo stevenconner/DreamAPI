@@ -11,7 +11,7 @@ const randomstring = require('randomstring');
 
 const User = require('./models.auth.js');
 
-router.post('/auth/', async function getAuth(ctx) {
+router.post('/auth', async function getAuth(ctx) {
   let user = null;
   let body = null;
   try {
@@ -42,7 +42,6 @@ router.post('/auth/', async function getAuth(ctx) {
   }
 
   ctx.state.user = user;
-  console.log('asdlifuyghakhjsdfagsdjhfkg asdjkfhg asd', ctx.state.user.id);
 
   try {
     const payload = {
@@ -56,6 +55,7 @@ router.post('/auth/', async function getAuth(ctx) {
     User.addToken(user.id, refreshToken);
 
     ctx.body = {
+      user: user,
       jwt: token,
       role: user.role,
       refreshToken: refreshToken,

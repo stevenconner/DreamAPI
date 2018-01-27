@@ -130,21 +130,23 @@ const logger = bunyan.createLogger({ name: 'api', streams: [access, error] });
 app.use(koaLogger(logger, {}));
 
 // Import public (unsecure) routes first
-// app.use(require('./routes-root.js'));
+// app.use(require('./routes.root.js'));
 app.use(require('./routes.auth.js'));
 app.use(require('./routes.user.js'));
 
 app.use(async function verifyJwt(ctx, next) {
-  if (!ctx.header.authorization) ctx.throw(401, 'Authorisation required');
+  if (!ctx.header.authorization) ctx.throw(401, 'Authorization required');
   const [scheme, token] = ctx.header.authorization.split(' ');
-  if (scheme !== 'Bearer') ctx.throw(401, 'Invalid authorisation');
+  if (scheme !== 'Bearer') ctx.throw(401, 'Invalid authorization');
 
   // Attempt to verify the token
   try {
     const payload = jwt.verify(token, process.env.JWT_KEY);
+
     // If it's a valid token, accept it
     ctx.state.user = payload;
   } catch (e) {
+    console.log(e);
     if (e.message === 'invalid token') ctx.throw(401, 'Invalid JWT');
     ctx.body = { loginError: true };
   }
