@@ -31,15 +31,15 @@ require('dotenv').config();
 const app = new Koa();
 
 // MySQL connection pool (set up on app initialisation)
-const config = {
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE
-};
+// const config = {
+//     host: process.env.DB_HOST,
+//     port: process.env.DB_PORT,
+//     user: process.env.DB_USER,
+//     password: process.env.DB_PASSWORD,
+//     database: process.env.DB_DATABASE
+// };
 
-global.connectionPool = mysql.createPool(config);
+// global.connectionPool = mysql.createPool(config);
 
 // Return response time in X-Response-Time header
 app.use(async function responseTime(ctx, next) {
@@ -102,22 +102,22 @@ app.use(async function handleErrors(ctx, next) {
 });
 
 // Establish s MySQL connection
-app.use(async function mysqlConnection(ctx, next) {
-    try {
-        ctx.state.db = global.db = await global.connectionPool.getConnection();
-        ctx.state.db.connection.config.namedPlaceholders = true;
-        // Traditional mode ensures not null is respected for unsupplied fields
-        await ctx.state.db.query('SET SESSION sql_mode = "TRADITIONAL"');
+// app.use(async function mysqlConnection(ctx, next) {
+//     try {
+//         ctx.state.db = global.db = await global.connectionPool.getConnection();
+//         ctx.state.db.connection.config.namedPlaceholders = true;
+//         // Traditional mode ensures not null is respected for unsupplied fields
+//         await ctx.state.db.query('SET SESSION sql_mode = "TRADITIONAL"');
 
-        await next();
+//         await next();
 
-        ctx.state.db.release();
-    } catch (e) {
-        // If getConnection() fails, we need to release the connection
-        if (ctx.state.db) ctx.state.db.release();
-        throw e;
-    }
-});
+//         ctx.state.db.release();
+//     } catch (e) {
+//         // If getConnection() fails, we need to release the connection
+//         if (ctx.state.db) ctx.state.db.release();
+//         throw e;
+//     }
+// });
 
 // Logging
 const access = { type: 'rotating-file', path: './logs/api-access.log', level: 'trace', period: '1d', count: 4 };
@@ -151,7 +151,8 @@ app.use(koaLogger(logger, {}));
 app.use(require('./routes-test.js'));
 
 // Create the server
-app.listen(process.env.PORT || 3000);
-console.info(`${process.version} listening on port ${process.env.PORT || 3000} (${app.env}/${config.database})`);
+app.listen(process.env.PORT);
+// console.info(`${process.version} listening on port ${process.env.PORT || 3000} (${app.env}/${config.database})`);
+console.info(`${process.version} listening on port ${process.env.PORT} (${app.env}/)`);
 
 module.exports = app;
