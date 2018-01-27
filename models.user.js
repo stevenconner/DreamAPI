@@ -5,7 +5,7 @@ const scrypt = require('scrypt');
 class User {
   static async createUser(ctx) {
     console.log(ctx.request);
-    const body = ctx.request.body;
+    const body = JSON.parse(ctx.request.body);
 
     let hashedPassword = '';
     try {
