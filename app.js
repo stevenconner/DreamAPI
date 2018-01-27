@@ -112,13 +112,10 @@ app.use(async function mysqlConnection(ctx, next) {
 
     await next();
 
-    console.log('Established connection');
-
     ctx.state.db.release();
   } catch (e) {
     // If getConnection() fails, we need to release the connection
     if (ctx.state.db) ctx.state.db.release();
-    console.log('Releasing connection');
     throw e;
   }
 });

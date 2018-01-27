@@ -9,27 +9,58 @@ class Journal {
    */
   static async get(ctx) {
     try {
+      // Fetch a list of all journal entries
       let [journals] = await global.db.query('SELECT * FROM journal WHERE userID = ? ORDER BY dateAdded desc', [ctx.state.user.id]);
 
+      // Categorize the journals
       const allJournals = journals;
       const dayJournals = [];
       const dreamJournals = [];
 
+      // Other datasets
+      const scores = [{}];
+
       for (const j of journals) {
+        // Push journals in their respective arrays
         if (j.type === 1) dayJournals.push(j);
         else if (j.type === 2) dreamJournals.push(j);
+
+        // Calculate sentiment
+        const sent = sentiment(j.content);
+
+        // Push the top three most significant words to the score for reference
+        const words = [];
+        let counter = 0;
+        for (let i = 0; i < sent.words.length; i++) {
+          if (counter < 2) {
+            words.push(sent.words[i]);
+            counter++;
+          }
+        }
+
+        // Construct the object to push
+        const obj = {
+          score: sent.score,
+          words: words
+        };
+
+        // Push the journal score object
+        scores.push(obj);
       }
 
+      // Construct JSON object for journals
       journals = {
         all: allJournals,
         day: dayJournals,
         dream: dreamJournals
       };
 
+      // Construct response body
       ctx.body = {
         error: false,
         msg: 'Fetched journals',
-        journals: journals
+        journals: journals,
+        scores: scores
       };
     } catch (e) {
       ctx.body = {
