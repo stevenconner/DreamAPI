@@ -48,6 +48,7 @@
     "node-fetch": "^1.6.3",
     "nodejs-info": "^1.0.1",
     "nodemailer": "^4.3.1",
+    "randomstring": "^1.1.5",
     "scrypt": "^6.0.3",
     "xmlify": "^1.1.0"
   },
@@ -72,32 +73,15 @@
     },
     "extends": "eslint:recommended",
     "rules": {
-      "array-bracket-spacing": [
-        "error",
-        "always",
-        {
-          "singleValue": false
-        }
-      ],
-      "comma-dangle": [
-        "error",
-        "always-multiline"
-      ],
       "curly": [
         "error",
         "multi-line"
       ],
       "indent": [
         "error",
-        4,
+        2,
         {
           "SwitchCase": 1
-        }
-      ],
-      "key-spacing": [
-        "error",
-        {
-          "align": "value"
         }
       ],
       "no-case-declarations": "off",
@@ -124,7 +108,6 @@
         "single",
         "avoid-escape"
       ],
-      "require-await": "error",
       "semi": [
         "error",
         "always"
