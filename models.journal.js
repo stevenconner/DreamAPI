@@ -40,8 +40,7 @@ class Journal {
    * @param  {object} ctx
    */
   static async createJournal(ctx) {
-    // const body = JSON.parse(ctx.request.body);
-    const body = ctx.request.body;
+    const body = JSON.parse(ctx.request.body);
 
     console.log(ctx.state.user);
 
