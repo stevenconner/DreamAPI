@@ -11,16 +11,14 @@
 
 'use strict';
 
-const Koa       = require('koa');          // Koa framework
-const jwt       = require('jsonwebtoken'); // JSON Web Token implementation
-const xmlify    = require('xmlify');       // JS object to XML
-const yaml      = require('js-yaml');      // JS object to YAML
-const bunyan    = require('bunyan');       // logging
-const koaLogger = require('koa-bunyan');   // logging
-
+const Koa = require('koa'); // Koa framework
+const jwt = require('jsonwebtoken'); // JSON Web Token implementation
+const xmlify = require('xmlify'); // JS object to XML
+const yaml = require('js-yaml'); // JS object to YAML
+const bunyan = require('bunyan'); // logging
+const koaLogger = require('koa-bunyan'); // logging
 
 const app = new Koa(); // API app
-
 
 // content negotiation: api will respond with json, xml, or yaml
 app.use(async function contentNegotiation(ctx, next) {
@@ -54,13 +52,10 @@ app.use(async function contentNegotiation(ctx, next) {
     }
 });
 
-
 // handle thrown or uncaught exceptions anywhere down the line
 app.use(async function handleErrors(ctx, next) {
     try {
-
         await next();
-
     } catch (e) {
         ctx.status = e.status || 500;
         switch (ctx.status) {
@@ -86,11 +81,9 @@ app.use(async function handleErrors(ctx, next) {
     }
 });
 
-
 // set up MySQL connection
 app.use(async function mysqlConnection(ctx, next) {
     try {
-
         // keep copy of ctx.state.db in global for access from models
         ctx.state.db = global.db = await global.connectionPool.getConnection();
         ctx.state.db.connection.config.namedPlaceholders = true;
@@ -100,7 +93,6 @@ app.use(async function mysqlConnection(ctx, next) {
         await next();
 
         ctx.state.db.release();
-
     } catch (e) {
         // note if getConnection() fails we have no this.state.db, but if anything downstream throws,
         // we need to release the connection
@@ -109,13 +101,11 @@ app.use(async function mysqlConnection(ctx, next) {
     }
 });
 
-
 // logging
-const access = { type: 'rotating-file', path: './logs/api-access.log', level: 'trace', period: '1d', count: 4 };
-const error  = { type: 'rotating-file', path: './logs/api-error.log',  level: 'error', period: '1d', count: 4 };
-const logger = bunyan.createLogger({ name: 'api', streams: [ access, error ] });
-app.use(koaLogger(logger, {}));
-
+// const access = { type: 'rotating-file', path: './logs/api-access.log', level: 'trace', period: '1d', count: 4 };
+// const error = { type: 'rotating-file', path: './logs/api-error.log', level: 'error', period: '1d', count: 4 };
+// const logger = bunyan.createLogger({ name: 'api', streams: [access, error] });
+// app.use(koaLogger(logger, {}));
 
 // ------------ routing
 
@@ -128,7 +118,7 @@ app.use(require('./routes-auth.js'));
 
 app.use(async function verifyJwt(ctx, next) {
     if (!ctx.header.authorization) ctx.throw(401, 'Authorisation required');
-    const [ scheme, token ] = ctx.header.authorization.split(' ');
+    const [scheme, token] = ctx.header.authorization.split(' ');
     if (scheme != 'Bearer') ctx.throw(401, 'Invalid authorisation');
 
     const roles = { g: 'guest', a: 'admin', s: 'su' };
@@ -137,11 +127,11 @@ app.use(async function verifyJwt(ctx, next) {
         const payload = jwt.verify(token, 'koa-sample-app-signature-key'); // throws on invalid token
 
         // valid token: accept it...
-        ctx.state.user = payload;                  // for user id  to look up user details
+        ctx.state.user = payload; // for user id  to look up user details
         ctx.state.user.Role = roles[payload.role]; // for authorisation checks
     } catch (e) {
         if (e.message == 'invalid token') ctx.throw(401, 'Invalid JWT'); // Unauthorized
-        ctx.throw(e.status||500, e.message); // Internal Server Error
+        ctx.throw(e.status || 500, e.message); // Internal Server Error
     }
 
     await next();
@@ -150,7 +140,7 @@ app.use(async function verifyJwt(ctx, next) {
 app.use(require('./routes-members.js'));
 app.use(require('./routes-teams.js'));
 app.use(require('./routes-team-members.js'));
-
+app.use(require('../routes-test.js'));
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 

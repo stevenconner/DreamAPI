@@ -42,6 +42,7 @@
     "koa-router": "^7.0.1",
     "koa-session": "^4.0.1",
     "koa-static": "^3.0.0",
+    "koa2-cors": "^2.0.3",
     "markdown-it": "^8.3.0",
     "mysql2": "^1.2.0",
     "node-fetch": "^1.6.3",
@@ -71,23 +72,67 @@
     },
     "extends": "eslint:recommended",
     "rules": {
-      "array-bracket-spacing": [ "error", "always", { "singleValue": false } ],
-      "comma-dangle": [ "error", "always-multiline" ],
-      "curly": [ "error", "multi-line" ],
-      "indent": [ "error", 4, { "SwitchCase": 1 } ],
-      "key-spacing": [ "error", { "align": "value" } ],
+      "array-bracket-spacing": [
+        "error",
+        "always",
+        {
+          "singleValue": false
+        }
+      ],
+      "comma-dangle": [
+        "error",
+        "always-multiline"
+      ],
+      "curly": [
+        "error",
+        "multi-line"
+      ],
+      "indent": [
+        "error",
+        4,
+        {
+          "SwitchCase": 1
+        }
+      ],
+      "key-spacing": [
+        "error",
+        {
+          "align": "value"
+        }
+      ],
       "no-case-declarations": "off",
-      "no-console": [ "warn", { "allow": [ "error", "info" ] } ],
+      "no-console": [
+        "warn",
+        {
+          "allow": [
+            "error",
+            "info"
+          ]
+        }
+      ],
       "no-redeclare": "warn",
       "no-shadow": "warn",
       "no-unused-vars": "warn",
       "no-var": "error",
-      "object-curly-spacing": [ "error", "always" ],
+      "object-curly-spacing": [
+        "error",
+        "always"
+      ],
       "prefer-const": "error",
-      "quotes": [ "error", "single", "avoid-escape" ],
+      "quotes": [
+        "error",
+        "single",
+        "avoid-escape"
+      ],
       "require-await": "error",
-      "semi": [ "error", "always" ],
-      "strict": [ "error", "global" ]
+      "semi": [
+        "error",
+        "always"
+      ],
+      "strict": [
+        "error",
+        "global"
+      ]
     }
   }
 }
